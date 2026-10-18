@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Store</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main>
+        <h1>Item Store</h1>
+        <p class="status" id="status"></p>
+
+        <form id="add-form">
+            <input type="text" id="name" placeholder="Item name" required>
+            <input type="number" id="price" placeholder="Price" step="0.01" min="0" required>
+            <button type="submit">Add Item</button>
+        </form>
+
+        <ul id="item-list"></ul>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
