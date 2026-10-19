@@ -12,9 +12,10 @@ api-server/
 ├── frontend/
 │   ├── index.html           # served by nginx
 │   ├── style.css
-│   └── app.js               # calls the backend via fetch
+│   ├── app.js               # calls the backend via fetch
+│   └── server.js            # Node static server (PM2, port 3000)
 └── deploy/
-    ├── ecosystem.config.js  # PM2 config for the backend
+    ├── ecosystem.config.js  # PM2 config: backend + frontend
     └── nginx.conf           # nginx reverse-proxy config
 ```
 
@@ -57,13 +58,13 @@ cd ~
 git clone <your-repo-url> api-server
 cd api-server
 
-# 2. start the backend with PM2
+# 2. start both apps (backend + frontend) with PM2
 mkdir -p logs
 pm2 start deploy/ecosystem.config.js
 pm2 save
 pm2 startup
 
-# 3. configure nginx
+# 3. configure nginx (proxies / -> frontend :3000, /api/ -> backend :8000)
 sudo cp deploy/nginx.conf /etc/nginx/sites-available/api-server
 sudo ln -sf /etc/nginx/sites-available/api-server /etc/nginx/sites-enabled/api-server
 sudo rm -f /etc/nginx/sites-enabled/default
@@ -76,6 +77,30 @@ Your site is then live at the server's public IP:
 ```bash
 curl http://localhost/health
 curl http://localhost/api/items
+curl -I http://localhost/
 ```
 
-Useful PM2 commands: `pm2 status`, `pm2 logs api-backend`, `pm2 restart api-backend`.
+### PM2 processes
+
+| App name      | What it runs                  | Port |
+|---------------|-------------------------------|------|
+| `api-backend` | `python3 app.py` (JSON API)   | 8000 |
+| `api-frontend`| `node server.js` (static site)| 3000 |
+
+Useful PM2 commands:
+
+```bash
+pm2 status
+pm2 logs api-backend
+pm2 logs api-frontend
+pm2 restart api-backend
+```
+
+### Deploy an update
+
+```bash
+cd ~/api-server
+git pull
+pm2 startOrRestart deploy/ecosystem.config.js
+pm2 save
+```
