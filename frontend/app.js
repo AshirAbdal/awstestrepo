@@ -2,7 +2,6 @@ const listEl = document.getElementById("item-list");
 const form = document.getElementById("add-form");
 const addBtn = document.getElementById("add-btn");
 const toastEl = document.getElementById("toast");
-const skeletonEl = document.getElementById("skeleton");
 
 let toastTimer = null;
 
@@ -11,7 +10,7 @@ function showToast(message, type) {
     toastEl.className = "toast " + type;
     requestAnimationFrame(() => toastEl.classList.add("show"));
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2500);
 }
 
 async function api(path, options = {}) {
@@ -22,17 +21,11 @@ async function api(path, options = {}) {
 }
 
 async function loadItems() {
-    skeletonEl.hidden = false;
-    listEl.style.display = "none";
     try {
         const body = await api("/api/items");
         render(body.data.items);
     } catch (err) {
-        render([]);
         showToast(err.message, "err");
-    } finally {
-        skeletonEl.hidden = true;
-        listEl.style.display = "";
     }
 }
 
@@ -45,9 +38,8 @@ function render(items) {
         listEl.appendChild(li);
         return;
     }
-    items.forEach((item, index) => {
+    items.forEach((item) => {
         const li = document.createElement("li");
-        li.style.animationDelay = `${index * 70}ms`;
 
         const name = document.createElement("span");
         name.className = "item-name";
@@ -78,7 +70,6 @@ form.addEventListener("submit", async (event) => {
     if (!item.name) return;
 
     addBtn.disabled = true;
-    addBtn.classList.add("loading");
     try {
         await api("/api/items", {
             method: "POST",
@@ -93,24 +84,17 @@ form.addEventListener("submit", async (event) => {
         showToast(err.message, "err");
     } finally {
         addBtn.disabled = false;
-        addBtn.classList.remove("loading");
     }
 });
 
 listEl.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-id]");
     if (!button) return;
-
-    const li = button.closest("li");
-    li.classList.add("removing");
-    await new Promise((resolve) => setTimeout(resolve, 360));
-
     try {
         await api("/api/items/" + button.dataset.id, { method: "DELETE" });
         showToast("Item deleted", "ok");
         await loadItems();
     } catch (err) {
-        li.classList.remove("removing");
         showToast(err.message, "err");
     }
 });
