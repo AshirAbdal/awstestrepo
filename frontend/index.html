@@ -4,21 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Item Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main>
-        <h1>Item Store</h1>
-        <p class="status" id="status"></p>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
 
-        <form id="add-form">
-            <input type="text" id="name" placeholder="Item name" required>
-            <input type="number" id="price" placeholder="Price" step="0.01" min="0" required>
-            <button type="submit">Add Item</button>
+    <main class="card">
+        <header>
+            <h1 class="title">Item Store</h1>
+            <p class="subtitle">Manage your items with a beautiful JSON API</p>
+        </header>
+
+        <form id="add-form" autocomplete="off">
+            <div class="field">
+                <input type="text" id="name" placeholder="Item name" required maxlength="40">
+            </div>
+            <div class="field">
+                <input type="number" id="price" placeholder="Price" step="0.01" min="0" required>
+            </div>
+            <button type="submit" id="add-btn" class="btn-primary">
+                <span class="btn-label">Add</span>
+                <span class="btn-spinner"></span>
+            </button>
         </form>
 
-        <ul id="item-list"></ul>
+        <div id="toast" class="toast" role="status"></div>
+
+        <ul id="item-list" class="item-list"></ul>
+        <div id="skeleton" class="skeleton" hidden>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+        </div>
     </main>
+
     <script src="app.js"></script>
 </body>
 </html>
